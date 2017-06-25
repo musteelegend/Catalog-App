@@ -46,21 +46,22 @@ def showMenu(catalog_id):
 
 
 #Create a new menu item
-@menu_page.route('/catalog/<int:catalog_id>/menu/new/',methods=['GET','POST'])
-def newMenuItem(catalog_id):
+@menu_page.route('/catalog/menu/new/',methods=['GET','POST'])
+def newMenuItem():
   if 'username' not in login_session:
       return redirect('/login')
-  catalog = session.query(Catalog).filter_by(id = catalog_id).one()
-  if login_session['user_id'] != catalog.user_id:
-      return "<script>function myFunction() {alert('You are not authorized to add menu items to this catalog. Please create your own catalog in order to add items.');}</script><body onload='myFunction()''>"
+  # catalogs = session.query(Catalog).order_by(asc(Catalog.name))
+  # if login_session['user_id'] != catalog.user_id:
+      # return "<script>function myFunction() {alert('You are not authorized to add menu items to this catalog. Please create your own catalog in order to add items.');}</script><body onload='myFunction()''>"
+  catalogs = request.args.get('catalogs')
   if request.method == 'POST':
-      newItem = MenuItem(name = request.form['name'], description = request.form['description'], price = request.form['price'], course = request.form['course'], catalog_id = catalog_id, user_id=login_session['user_id'])
+      newItem = MenuItem(title = request.form['title'], description = request.form['description'], catalog_id = catalog_id, user_id=login_session['user_id'])
       session.add(newItem)
       session.commit()
       flash('New Menu %s Item Successfully Created' % (newItem.name))
-      return redirect(url_for('menu_page.showMenu', catalog_id = catalog_id))
+      return redirect(url_for('menu_page.showMenu'))
   else:
-      return render_template('newmenuitem.html', catalog_id = catalog_id)
+      return render_template('newmenu.html')
 
 
 #Edit a menu item
