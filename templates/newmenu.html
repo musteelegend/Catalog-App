@@ -10,19 +10,19 @@
     </div>
     <div class="row">
         <div class="col-md-6 col-md-offset-1 padding-top">
-            <form action="#" method = "post">
+            <form method = "post">
                 <div class="form-group">
                     <label for="title">Title:</label>
-                    <input type ="text" maxlength="50" class="form-control" name="name"placeholder="Title of the item">
+                    <input type ="text" maxlength="50" class="form-control" name="title" placeholder="Title of the item">
 
                     <label for="description">Description:</label>
                     <textarea class="form-control" maxlength="250" rows="3" name="description" placeholder="Description of the item"></textarea>
 
                     <label for="catalog">Catalog:</label>
 
-                    <select id="catalogs" name="catalogs">
+                    <select id="catalogs" name="catalog_id" class="form-control">
                     {% for catalog in catalogs %}
-                        <option value="{{catalog.name}}">{{catalog.name}}</option>
+                        <option value="{{catalog.id}}">{{catalog.name}}</option>
                     {% endfor %}
                     </select>
 

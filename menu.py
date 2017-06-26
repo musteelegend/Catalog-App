@@ -6,7 +6,7 @@ from flask import session as login_session
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Catalog, MenuItem, User
-from login_handlers.oauth_login import showLogin, fbconnect, gconnect
+from login_handlers.oauth_login import showLogin, fbconnect, gconnect, getUserInfo
 
 
 # IMPORTS FOR THIS STEP
@@ -44,24 +44,43 @@ def showMenu(catalog_id):
         return render_template('menu.html', items = items, catalog = catalog, catalogs=catalogs, creator=creator)
 
 
+#Show a catalog menu item
+@menu_page.route('/catalog/<int:catalog_id>/<string:item_title>/')
+@menu_page.route('/catalog/<int:catalog_id>/menu/<string:item_title>/')
+def showMenuItem(catalog_id, item_title):
+    # catalogs = session.query(Catalog).order_by(asc(Catalog.name))
+    catalog = session.query(Catalog).filter_by(id = catalog_id).one()
+    creator = getUserInfo(catalog.user_id)
+    item = session.query(MenuItem).filter_by(title = item_title).one()
+    if 'username' not in login_session or creator.id != login_session['user_id']:
+        return render_template('publicmenuitem.html', item=item, catalog=catalog, creator=creator)
+    else:
+        return render_template('menuitem.html', item=item, catalog = catalog, creator=creator)
+
 
 #Create a new menu item
 @menu_page.route('/catalog/menu/new/',methods=['GET','POST'])
 def newMenuItem():
   if 'username' not in login_session:
       return redirect('/login')
-  # catalogs = session.query(Catalog).order_by(asc(Catalog.name))
+  catalogs = session.query(Catalog).order_by(asc(Catalog.name))
   # if login_session['user_id'] != catalog.user_id:
       # return "<script>function myFunction() {alert('You are not authorized to add menu items to this catalog. Please create your own catalog in order to add items.');}</script><body onload='myFunction()''>"
-  catalogs = request.args.get('catalogs')
+  print("This should print."+request.method)
   if request.method == 'POST':
-      newItem = MenuItem(title = request.form['title'], description = request.form['description'], catalog_id = catalog_id, user_id=login_session['user_id'])
+      print("This should work+"+request.form['title'])
+      print("This should work+"+request.form['description'])
+      print("This should work+"+str(login_session['user_id']))
+      catalog_id = request.form.get('catalog_id')
+      newItem = MenuItem(title = request.form['title'], description = request.form['description'], catalog_id = request.form['catalog_id'], user_id=login_session['user_id'])
+      # catalog_id = request.form.get('catalogs')
+      print(catalog_id)
       session.add(newItem)
       session.commit()
-      flash('New Menu %s Item Successfully Created' % (newItem.name))
-      return redirect(url_for('menu_page.showMenu'))
+      flash('New Menu %s Item Successfully Created' % (newItem.title))
+      return redirect(url_for('menu_page.showMenu', catalog_id=catalog_id))
   else:
-      return render_template('newmenu.html')
+      return render_template('newmenu.html', catalogs=catalogs)
 
 
 #Edit a menu item

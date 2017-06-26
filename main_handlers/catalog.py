@@ -3,7 +3,7 @@ app = Flask(__name__)
 
 from flask import session as login_session
 
-from sqlalchemy import create_engine, asc
+from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Catalog, MenuItem, User
 from login_handlers.oauth_login import showLogin, fbconnect, gconnect
@@ -32,7 +32,10 @@ catalog_page = Blueprint('catalog_page', __name__,
 @catalog_page.route('/catalog/')
 def showCatalogs():
   catalogs = session.query(Catalog).order_by(asc(Catalog.name))
-  latestItems = session.query(MenuItem).order_by(asc(MenuItem.created_date))
+  latestItems = session.query(MenuItem).order_by(desc(MenuItem.created_date))
+  # itemsCatalog = session.query(Catalog).filter_by(latestItems.catalog_id).one()
+  print(latestItems)
+  print(catalogs)
   if 'username' not in login_session:
       return render_template('publiccatalogs.html', catalogs=catalogs, latestItems=latestItems)
   else:

@@ -1,0 +1,40 @@
+{% extends "main.html" %}
+{% block content %}
+
+<div class = 'row flash'>
+              {% with messages = get_flashed_messages() %}
+      {% if messages %}
+
+        <ul>
+        {% for message in messages %}
+            <li> <strong> {{ message }} </strong> </li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+</div>
+<div class="row padding-top padding-bottom">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <h2>{{item.title}}</h2>
+            {# <a href="{{url_for('menu_page.newMenuItem')}}">
+                <button class="btn btn-default" id="new-menu-item">
+                    <span class="glyphicon glyphicon-glass" aria-hidden="true"></span>Add Item
+                </button>
+            </a> #}
+            {# {% for item in items %} #}
+                {# <a href="{{url_for('menu_page.showMenuItem', catalog_id=catalog.id, item_title=item.title)}}"> #}
+                    <div class="row">
+                        {# <div class="col-md-1"></div> #}
+                            <div class="col-md-10 restaurant-list">
+                                <h5>{{item.description}}</h5>
+                            </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                {# </a> #}
+            {# {% endfor %} #}
+        </div>
+        <div class="col-md-2"></div>
+</div>
+
+{% endblock %}
