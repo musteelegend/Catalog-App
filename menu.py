@@ -84,29 +84,33 @@ def newMenuItem():
 
 
 #Edit a menu item
-@menu_page.route('/catalog/<int:catalog_id>/menu/<int:menu_id>/edit', methods=['GET','POST'])
-def editMenuItem(catalog_id, menu_id):
+@menu_page.route('/catalog/<int:catalog_id>/menu/<string:item_title>/edit', methods=['GET','POST'])
+def editMenuItem(catalog_id, item_title):
+    # catalogs = session.query(Catalog).order_by(asc(Catalog.name))
+
     if 'username' not in login_session:
         return redirect('/login')
-    editedItem = session.query(MenuItem).filter_by(id = menu_id).one()
+    catalogs = session.query(Catalog).order_by(asc(Catalog.name))
+    editedItem = session.query(MenuItem).filter_by(title = item_title).one()
+
+    print(catalogs)
     catalog = session.query(Catalog).filter_by(id = catalog_id).one()
     if login_session['user_id'] != catalog.user_id:
         return "<script>function myFunction() {alert('You are not authorized to edit menu items to this catalog. Please create your own catalog in order to edit items.');}</script><body onload='myFunction()''>"
     if request.method == 'POST':
-        if request.form['name']:
-            editedItem.name = request.form['name']
+        catalogs = session.query(Catalog).order_by(asc(Catalog.name))
+        if request.form['title']:
+            editedItem.title = request.form['title']
         if request.form['description']:
             editedItem.description = request.form['description']
-        if request.form['price']:
-            editedItem.price = request.form['price']
-        if request.form['course']:
-            editedItem.course = request.form['course']
+        if request.form['catalog_id']:
+            editedItem.catalog_id = request.form['catalog_id']
         session.add(editedItem)
         session.commit()
         flash('Menu Item Successfully Edited')
-        return redirect(url_for('menu_page.showMenu', catalog_id = catalog_id))
+        return redirect(url_for('menu_page.showMenuItem', item=editedItem, catalog = catalog))
     else:
-        return render_template('editmenuitem.html', catalog_id = catalog_id, menu_id = menu_id, item = editedItem)
+        return render_template('editmenuitem.html', catalog = catalog, item = editedItem)
 
 
 #Delete a menu item
