@@ -14,6 +14,28 @@
     {% endwith %}
 </div>
 <div class="row padding-top padding-bottom">
+        <div class="col-md-1"></div>
+        <div class="col-md-10 padding-none">
+            <div class="row">
+                <div class="col-md-2">
+                    <a href="{{url_for('catalog_page.editCatalog', catalog_id = catalog.id)}}">
+                        <button class="btn btn-default" id="new-restaurant">
+                            <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Edit Catalog
+                        </button>
+                    </a>
+                </div>
+                <div class="col-md-10">
+                    <a href="{{url_for('catalog_page.deleteCatalog', catalog_id = catalog.id)}}">
+                        <button class="btn btn-default" id="new-restaurant">
+                            <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Delete Catalog
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+<div class="row padding-top padding-bottom">
         <div class="col-md-3">
             <h2>Categories</h2>
             {% for catalog in catalogs %}

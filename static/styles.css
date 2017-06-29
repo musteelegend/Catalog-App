@@ -1,6 +1,9 @@
 .head {
-    color: #0000cc;
-    height: 40px;
+    background: blue;
+}
+.heading {
+    color: white;
+    font-size: bolder;
 }
 
 .flash {
@@ -31,11 +34,11 @@ h1 {
     font-weight: 300;
 }
 
-h2 {
+/*h2 {
     font-size: 24px;
     color: #42C3C9;
     line-height: 29px;
-}
+}*/
 
 h3 {
     font-size: 18px;

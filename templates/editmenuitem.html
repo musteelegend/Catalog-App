@@ -19,18 +19,20 @@
 
                     <select id="catalogs" name="catalog_id" class="form-control">
                     {% for i in catalogs %}
-                        <option value="{{i.id}}">{{i.name}}</option>
+                        <option value="{{i.id}}" {% if i.name == item.catalog.name%} selected {%endif%}>{{i.name}}</option>
                     {% endfor %}
                     </select>
 
                     <button type="submit" class="btn btn-default" id="submit" type="submit">
                     <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>Save</button>
-                    <a href = "{{url_for('menu_page.showMenuItem', catalog_id=catalog.id, item_title=item.title)}}">
-                        <button class="btn btn-default delete">
-                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
-                    </a>
                 </div>
             </form>
+            <div class="form-group">
+                <a href = "{{url_for('menu_page.showMenuItem',item_title=item.title, catalog_id=catalog.id)}}">
+                    <button class="btn btn-default delete">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
+                </a>
+            </div>
         </div>
     </div>
 {% endblock %}

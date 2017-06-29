@@ -56,7 +56,7 @@ def newCatalog():
         return render_template('newcatalog.html')
 
 #Edit a catalog
-@app.route('/catalog/<int:catalog_id>/edit/', methods = ['GET', 'POST'])
+@catalog_page.route('/catalog/<int:catalog_id>/edit/', methods = ['GET', 'POST'])
 def editCatalog(catalog_id):
     editedCatalog = session.query(Catalog).filter_by(id = catalog_id).one()
     if 'username' not in login_session:
@@ -64,16 +64,17 @@ def editCatalog(catalog_id):
     if editedCatalog.user_id != login_session['user_id']:
         return "<script>function myFunction() {alert('You are not authorized to edit this catalog. Please create your own catalog in order to edit.');}</script><body onload='myFunction()''>"
     if request.method == 'POST':
-        if request.form['name']:
-          editedCatalog.name = request.form['name']
-          flash('Catalog Successfully Edited %s' % editedCatalog.name)
-          return redirect(url_for('showCatalogs'))
+        editedCatalog.name = request.form['name']
+        session.add(editedCatalog)
+        session.commit()
+        flash('Catalog Successfully Edited %s' % editedCatalog.name)
+        return redirect(url_for('menu_page.showMenu', catalog_id=catalog_id))
     else:
-      return render_template('editcatalog.html', catalog = editedCatalog)
+        return render_template('editcatalog.html', catalog = editedCatalog)
 
 
 #Delete a catalog
-@app.route('/catalog/<int:catalog_id>/delete/', methods = ['GET','POST'])
+@catalog_page.route('/catalog/<int:catalog_id>/delete/', methods = ['GET','POST'])
 def deleteCatalog(catalog_id):
     catalogToDelete = session.query(Catalog).filter_by(id = catalog_id).one()
     if 'username' not in login_session:
@@ -85,12 +86,6 @@ def deleteCatalog(catalog_id):
       session.delete(catalogToDelete)
       flash('%s Successfully Deleted' % catalogToDelete.name)
       session.commit()
-      return redirect(url_for('showCatalogs', catalog_id=catalog_id))
+      return redirect(url_for('catalog_page.showCatalogs'))
     else:
       return render_template('deleteCatalog.html', catalog=catalogToDelete)
-
-
-if __name__ == '__main__':
-  app.secret_key = 'super_secret_key'
-  app.debug = True
-  app.run(host = '0.0.0.0', port = 5000)
