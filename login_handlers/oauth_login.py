@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash, Blueprint
+from flask_login import login_user , logout_user , current_user , login_required
 app = Flask(__name__)
 
 from flask import session as login_session
 
-from database_setup import Base, User
+from database_setup import Base, OauthUser, User
 
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
@@ -14,6 +15,8 @@ import json
 from flask import make_response
 import requests
 import random, string
+from flask_login import LoginManager
+
 
 engine = create_engine('sqlite:///catalogmenu.db')
 Base.metadata.bind = engine
@@ -22,8 +25,10 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
-oauth_page = Blueprint('oauth_page', __name__,
+oauth_login_page = Blueprint('oauth_login_page', __name__,
                         template_folder='templates')
+
+
 
 
 CLIENT_ID = json.loads(
@@ -31,14 +36,32 @@ CLIENT_ID = json.loads(
 APPLICATION_NAME = "Restaurant Menu Application"
 
 
-@oauth_page.route('/login')
+@oauth_login_page.route('/login')
 def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase+string.digits) for x in list(range(32)))
     login_session['state'] = state
     return render_template('login.html', STATE=state)
 
+@oauth_login_page.route('/login',methods=['GET','POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    username = request.form['username']
+    password = request.form['password']
+    login_session['username'] = username
+    login_session['email'] = password
+    login_session['provider'] = "inHouse"
+    registered_user = session.query(User).filter_by(username=username,password=password).first()
+    # User.query.filter_by(username=username,password=password).first()
+    if registered_user is None:
+        flash('Username or Password is invalid' , 'error')
+        return redirect(url_for('login'))
+    login_user(registered_user)
+    flash('Logged in successfully')
+    return redirect(request.args.get('next') or url_for('catalog_page.showCatalogs'))
 
-@oauth_page.route('/fbconnect', methods=['POST'])
+
+@oauth_login_page.route('/fbconnect', methods=['POST'])
 def fbconnect():
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
@@ -104,7 +127,7 @@ def fbconnect():
     flash("Now logged in as %s" % login_session['username'])
     return output
 
-@oauth_page.route('/gconnect', methods=['POST'])
+@oauth_login_page.route('/gconnect', methods=['POST'])
 def gconnect():
     # Validate state token
     if request.args.get('state') != login_session['state']:
@@ -196,6 +219,18 @@ def gconnect():
     output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
     return output
+
+
+@oauth_login_page.route('/register' , methods=['GET','POST'])
+def register():
+    if request.method == 'GET':
+        return render_template('register.html')
+    user = User(username=request.form['username'] , password=request.form['password'], email=request.form['email'])
+    session.add(user)
+    session.commit()
+    flash('User successfully registered')
+    return redirect(url_for('oauth_login_page.login'))
+
 
 
 def getUserID(email):

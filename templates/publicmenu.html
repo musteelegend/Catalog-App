@@ -1,0 +1,46 @@
+{% extends "main.html" %}
+{% block content %}
+
+<div class = 'row flash'>
+              {% with messages = get_flashed_messages() %}
+      {% if messages %}
+
+        <ul>
+        {% for message in messages %}
+            <li> <strong> {{ message }} </strong> </li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+</div>
+
+<div class="row padding-bottom">
+    <div class="col-md-1"></div>
+    <div class="col-md-3 well">
+        <h2>Categories</h2>
+        {% for catalog in catalogs %}
+            <a href = "{{url_for('menu_page.showMenu', catalog_id = catalog.id)}}">
+                <div class="row">
+                    <div class="col-md-12 catalog-list">
+                        <h3>{{catalog.name}}</h3>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+    <div class="col-md-7 well">
+        <h2>{{catalog.name}} Items({{count}} Items)</h2>
+        {% for item in items %}
+            <a href="{{url_for('menu_page.showMenuItem', catalog_id=catalog.id, item_title=item.title)}}">
+                <div class="row">
+                    <div class="col-md-10 catalog-list">
+                        <h3>{{item.title}}</h3>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+    <div class="col-md-1"></div>
+</div>
+
+{% endblock %}

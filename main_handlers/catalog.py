@@ -5,7 +5,7 @@ from flask import session as login_session
 
 from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Catalog, MenuItem, User
+from database_setup import Base, Catalog, MenuItem, OauthUser
 from login_handlers.oauth_login import showLogin, fbconnect, gconnect
 
 
@@ -32,14 +32,12 @@ catalog_page = Blueprint('catalog_page', __name__,
 @catalog_page.route('/catalog/')
 def showCatalogs():
   catalogs = session.query(Catalog).order_by(asc(Catalog.name))
-  latestItems = session.query(MenuItem).order_by(desc(MenuItem.created_date))
-  # itemsCatalog = session.query(Catalog).filter_by(latestItems.catalog_id).one()
-  print(latestItems)
-  print(catalogs)
+  latestItems = session.query(MenuItem).order_by(desc(MenuItem.created_date)).limit(8)
   if 'username' not in login_session:
       return render_template('publiccatalogs.html', catalogs=catalogs, latestItems=latestItems)
   else:
       return render_template('catalogs.html', catalogs = catalogs, latestItems=latestItems)
+
 
 #Create a new catalog
 @catalog_page.route('/catalog/new/', methods=['GET','POST'])
@@ -77,6 +75,7 @@ def editCatalog(catalog_id):
 @catalog_page.route('/catalog/<int:catalog_id>/delete/', methods = ['GET','POST'])
 def deleteCatalog(catalog_id):
     catalogToDelete = session.query(Catalog).filter_by(id = catalog_id).one()
+    # menuItemsToDelete = session.query(MenuItem).filter_by(catalog_id=catalog_id).all()
     if 'username' not in login_session:
         return redirect('/login')
     if catalogToDelete.user_id != login_session['user_id']:
@@ -84,6 +83,8 @@ def deleteCatalog(catalog_id):
 
     if request.method == 'POST':
       session.delete(catalogToDelete)
+      # for i in menuItemsToDelete:
+      #     session.delete(i)
       flash('%s Successfully Deleted' % catalogToDelete.name)
       session.commit()
       return redirect(url_for('catalog_page.showCatalogs'))

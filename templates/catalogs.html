@@ -14,53 +14,52 @@
 
 </div>
 
-    <div class="row padding-top padding-bottom">
-        <div class="col-md-1"></div>
-        <div class="col-md-10 padding-none">
-            <a href="{{url_for('catalog_page.newCatalog')}}">
-                <button class="btn btn-default" id="new-restaurant">
-                    <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Add Catalog
-                </button>
-            </a>
-        </div>
-        <div class="col-md-1"></div>
+<div class="row padding-top padding-bottom">
+    <div class="col-md-1"></div>
+    <div class="col-md-10 padding-none">
+        <a href="{{url_for('catalog_page.newCatalog')}}">
+            <button class="btn btn-default" id="new-catalog">
+                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>Add Catalog
+            </button>
+        </a>
     </div>
-    <div class="row padding-top padding-bottom">
-        <div class="col-md-4">
-            <h2>Categories</h2>
-            {% for catalog in catalogs %}
-                <a href = "{{url_for('menu_page.showMenu', catalog_id = catalog.id)}}">
-                    <div class="row">
-                        <div class="col-md-1"></div>
-                            <div class="col-md-10 restaurant-list">
-                                <h3>{{catalog.name}}</h3>
-                            </div>
-                        <div class="col-md-1"></div>
+    <div class="col-md-1"></div>
+</div>
+<div class="row padding-bottom">
+    <div class="col-md-1"></div>
+    <div class="col-md-3 well">
+        <h2>Categories</h2>
+        {% for catalog in catalogs %}
+            <a href = "{{url_for('menu_page.showMenu', catalog_id = catalog.id)}}">
+                <div class="row list">
+                    <div class="col-md-12 catalog-list">
+                        <h3>{{catalog.name}}</h3>
                     </div>
-                </a>
-            {% endfor %}
-        </div>
-        <div class="col-md-8">
-            <h2>Latest Items</h2>
 
-            <a href="{{url_for('menu_page.newMenuItem')}}">
-                <button class="btn btn-default" id="new-menu-item">
-                    <span class="glyphicon glyphicon-glass" aria-hidden="true"></span>Add Item
-                </button>
+                </div>
             </a>
-
-            {% for item in latestItems %}
-                <a href="#">
-                    <div class="row">
-                        {# <div class="col-md-1"></div> #}
-                            <div class="col-md-10 restaurant-list">
-                                <h3>{{item.title}}({{item.catalog.name}})</h3>
-                            </div>
-                        <div class="col-md-2"></div>
-                    </div
-                </a>
-            {% endfor %}
-        </div>
-
+        {% endfor %}
     </div>
+    <div class="col-md-7 well">
+        <h2>Latest Items</h2>
+
+        <a href="{{url_for('menu_page.newMenuItem')}}">
+            <button class="btn btn-default" id="new-menu-item">
+                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>Add Item
+            </button>
+        </a>
+
+        {% for item in latestItems %}
+        <a href="/">
+            <div class="row">
+                <div class="col-md-12 catalog-list list">
+                    <h3>{{item.title}}<i class="fadee">({{item.catalog.name}})</i></h3>
+                </div>
+            </div
+        </a>
+        {% endfor %}
+    </div>
+    <div class="col-md-1"></div>
+
+</div>
 {% endblock %}

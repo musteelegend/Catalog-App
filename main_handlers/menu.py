@@ -5,7 +5,7 @@ from flask import session as login_session
 
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Catalog, MenuItem, User
+from database_setup import Base, Catalog, MenuItem, OauthUser
 from login_handlers.oauth_login import showLogin, fbconnect, gconnect, getUserInfo
 
 
@@ -38,10 +38,11 @@ def showMenu(catalog_id):
     catalog = session.query(Catalog).filter_by(id = catalog_id).one()
     creator = getUserInfo(catalog.user_id)
     items = session.query(MenuItem).filter_by(catalog_id = catalog_id).all()
+    count = session.query(MenuItem).filter_by(catalog_id = catalog_id).count()
     if 'username' not in login_session or creator.id != login_session['user_id']:
-        return render_template('publicmenu.html', items=items, catalog=catalog, catalogs=catalogs, creator=creator)
+        return render_template('publicmenu.html', count=count, items=items, catalog=catalog, catalogs=catalogs, creator=creator)
     else:
-        return render_template('menu.html', items=items, catalog=catalog, catalogs=catalogs, creator=creator)
+        return render_template('menu.html', count=count, items=items, catalog=catalog, catalogs=catalogs, creator=creator)
 
 
 #Show a catalog menu item
@@ -69,7 +70,6 @@ def newMenuItem():
     if request.method == 'POST':
         catalog_id = request.form.get('catalog_id')
         newItem = MenuItem(title = request.form['title'], description = request.form['description'], catalog_id = request.form['catalog_id'], user_id=login_session['user_id'])
-        print(catalog_id)
         session.add(newItem)
         session.commit()
         flash('New Menu %s Item Successfully Created' % (newItem.title))
@@ -118,5 +118,4 @@ def deleteMenuItem(catalog_id,item_title):
         flash('Menu Item Successfully Deleted')
         return redirect(url_for('menu_page.showMenu', catalog_id=catalog_id))
     else:
-        print(request.method)
         return render_template('deleteMenuItem.html', item=itemToDelete, catalog=catalog)

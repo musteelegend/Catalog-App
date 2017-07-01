@@ -1,14 +1,45 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
-    </script>
+{% extends "main.html" %}
+{% block content %}
+<div class = 'row flash'>
+              {% with messages = get_flashed_messages() %}
+      {% if messages %}
 
-    <script src="//apis.google.com/js/platform.js?onload=start"> </script>
-</head>
-<body>
+        <ul>
+        {% for message in messages %}
+            <li> <strong> {{ message }} </strong> </li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+</div>
 <!-- GOOGLE PLUS SIGN IN BUTTON-->
+<div class="row">
+  <div class="col-md-3"></div>
+  <div class="col-md-6">
+    <form action="" method=post class="form-horizontal">
+    <h2>Signin to Catalog Application </h2>
+    <div class="control-group">
+        <div class="controls">
+          <input type="text" id="username" name="username" class="input-xlarge"
+            placeholder="Enter Username" required>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <div class="controls">
+          <input type="password" id="password" name="password" class="input-xlarge"
+            placeholder="Enter Password" required>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <div class="controls">
+          <button type="submit" class="margin-top btn-default">Signin</button>
+          <p>Don't have an account, register <a href="{{url_for('oauth_login_page.register')}}">HERE</a></p>
+        </div>
+    </div>
+  </form>
+  <h2>Login in with social media?</h2>
 
     <div id="signInButton">
         <span class="g-signin"
@@ -22,6 +53,15 @@
         </span>
     </div>
     <div id="result"></div>
+
+    <button>
+        <fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
+            Login with Facebook
+        </fb:login-button>
+    </button>
+  </div>
+  <div class="col-md-3"></div>
+</div>
 
     <script>
     function signInCallback(authResult) {
@@ -108,17 +148,5 @@
       // });
   }
     </script>
-
-
-    <button>
-        <fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
-
-            Login with Facebook
-
-        </fb:login-button>
-
-
-    </button>
     <!--END FACEBOOK SIGN IN -->
-</body>
-</html>
+{%endblock%}

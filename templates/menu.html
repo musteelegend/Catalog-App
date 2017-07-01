@@ -14,61 +14,59 @@
     {% endwith %}
 </div>
 <div class="row padding-top padding-bottom">
-        <div class="col-md-1"></div>
-        <div class="col-md-10 padding-none">
-            <div class="row">
-                <div class="col-md-2">
-                    <a href="{{url_for('catalog_page.editCatalog', catalog_id = catalog.id)}}">
-                        <button class="btn btn-default" id="new-restaurant">
-                            <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Edit Catalog
-                        </button>
-                    </a>
-                </div>
-                <div class="col-md-10">
-                    <a href="{{url_for('catalog_page.deleteCatalog', catalog_id = catalog.id)}}">
-                        <button class="btn btn-default" id="new-restaurant">
-                            <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Delete Catalog
-                        </button>
-                    </a>
-                </div>
+    <div class="col-md-1"></div>
+    <div class="col-md-10 padding-none">
+        <div class="row">
+            <div class="col-md-2">
+                <a href="{{url_for('catalog_page.editCatalog', catalog_id = catalog.id)}}">
+                    <button class="btn btn-default" id="new-catalog">
+                        <span class="entypo-pencil" aria-hidden="true"></span>  Edit Catalog
+                    </button>
+                </a>
+            </div>
+            <div class="col-md-10">
+                <a href="{{url_for('catalog_page.deleteCatalog', catalog_id = catalog.id)}}">
+                    <button class="btn btn-default" id="new-catalog">
+                        <span class="entypo-trash" aria-hidden="true"></span>  Delete Catalog
+                    </button>
+                </a>
             </div>
         </div>
-        <div class="col-md-1"></div>
     </div>
-<div class="row padding-top padding-bottom">
-        <div class="col-md-3">
-            <h2>Categories</h2>
-            {% for catalog in catalogs %}
-                <a href = "{{url_for('menu_page.showMenu', catalog_id = catalog.id)}}">
-                    <div class="row">
-                        {# <div class="col-md-1"></div> #}
-                            <div class="col-md-10 restaurant-list">
-                                <h3>{{catalog.name}}</h3>
-                            </div>
-                        <div class="col-md-1"></div>
+    <div class="col-md-1"></div>
+</div>
+<div class="row padding-bottom">
+    <div class="col-md-1"></div>
+    <div class="col-md-3 well">
+        <h2>Categories</h2>
+        {% for catalog in catalogs %}
+            <a href = "{{url_for('menu_page.showMenu', catalog_id = catalog.id)}}">
+                <div class="row">
+                    <div class="col-md-12 catalog-list">
+                        <h3>{{catalog.name}}</h3>
                     </div>
-                </a>
-            {% endfor %}
-        </div>
-        <div class="col-md-8">
-            <h2>{{catalog.name}}</h2>
-            <a href="{{url_for('menu_page.newMenuItem')}}">
-                <button class="btn btn-default" id="new-menu-item">
-                    <span class="glyphicon glyphicon-glass" aria-hidden="true"></span>Add Item
-                </button>
+                </div>
             </a>
-            {% for item in items %}
-                <a href="{{url_for('menu_page.showMenuItem', catalog_id=catalog.id, item_title=item.title)}}">
-                    <div class="row">
-                        {# <div class="col-md-1"></div> #}
-                            <div class="col-md-10 restaurant-list">
-                                <h3>{{item.title}}({{item.catalog.name}})</h3>
-                            </div>
-                        <div class="col-md-1"></div>
+        {% endfor %}
+    </div>
+    <div class="col-md-7 well">
+        <h2>{{catalog.name}} Items({{count}} Items)</h2>
+        <a href="{{url_for('menu_page.newMenuItem')}}">
+            <button class="btn btn-default" id="new-menu-item">
+                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>Add Item
+            </button>
+        </a>
+        {% for item in items %}
+            <a href="{{url_for('menu_page.showMenuItem', catalog_id=catalog.id, item_title=item.title)}}">
+                <div class="row">
+                    <div class="col-md-10 catalog-list">
+                        <h3>{{item.title}}</h3>
                     </div>
-                </a>
-            {% endfor %}
-        </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+    <div class="col-md-1"></div>
 </div>
 
 {% endblock %}

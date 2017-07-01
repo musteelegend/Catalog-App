@@ -1,6 +1,8 @@
 {% extends "main.html" %}
 {% block content %}
-
+<div class="row divider green">
+    <div class="col-md-12"></div>
+</div>
 <div class = 'row flash'>
               {% with messages = get_flashed_messages() %}
       {% if messages %}
@@ -18,11 +20,9 @@
         <div class="col-md-8">
             <h2>{{item.title}}</h2>
                 <div class="row">
-                    <div class="col-md-1"></div>
-                        <div class="col-md-10 restaurant-list">
-                            <h5>{{item.description}}</h5>
-                        </div>
-                    <div class="col-md-1"></div>
+                    <div class="col-md-12 catalog-list">
+                        <p>Description: {{item.description}}</p>
+                    </div>
                 </div>
         </div>
         <div class="col-md-2"></div>
@@ -30,18 +30,13 @@
 <div class="row padding-bottom">
         <div class="col-md-2"></div>
         <div class="col-md-8">
-
-                <div class="row">
-                    <div class="col-md-1"></div>
-                    <div class="col-md-10 restaurant-list">
-                        <a href="{{url_for('menu_page.editMenuItem', catalog_id=catalog.id, item_title=item.title)}}">Edit</a>
-                        |
-                        <a href="{{url_for('menu_page.deleteMenuItem', catalog_id=catalog.id, item_title=item.title)}}">Delete</a>
-                    </div>
-                    {# <div class="col-md-1"></div> #}
-
-                    <div class="col-md-1"></div>
+            <div class="row">
+                <div class="col-md-12 catalog-list">
+                    <a href="{{url_for('menu_page.editMenuItem', catalog_id=catalog.id, item_title=item.title)}}">Edit</a>
+                    |
+                    <a href="{{url_for('menu_page.deleteMenuItem', catalog_id=catalog.id, item_title=item.title)}}">Delete</a>
                 </div>
+            </div>
         </div>
         <div class="col-md-2"></div>
 
