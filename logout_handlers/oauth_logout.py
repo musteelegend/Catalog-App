@@ -1,28 +1,27 @@
-from flask import Flask, render_template, request, redirect, jsonify, url_for, flash, Blueprint
-from flask_login import login_user , logout_user
-app = Flask(__name__)
-
+from flask import Flask, render_template, request, redirect, jsonify, url_for
+from flask import flash, Blueprint
+from flask_login import login_user, logout_user
 from flask import session as login_session
-
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 import httplib2
 import json
 from flask import make_response
 import requests
-
-
 from login_handlers.oauth_login import showLogin, gconnect, fbconnect
+app = Flask(__name__)
+
 
 oauth_logout_page = Blueprint('oauth_logout_page', __name__,
-                        template_folder='templates')
+                              template_folder='templates')
+
 
 @oauth_logout_page.route('/fbdisconnect')
 def fbdisconnect():
     facebook_id = login_session['facebook_id']
     # The access token must me included to successfully logout
     access_token = login_session['access_token']
-    url = 'https://graph.facebook.com/%s/permissions?access_token=%s' % (facebook_id,access_token)
+    url = 'https://graph.facebook.com/%s/permissions?access_token=%s' % (facebook_id, access_token)  # noqa
     h = httplib2.Http()
     result = h.request(url, 'DELETE')[1]
     return "you have been logged out"
@@ -48,6 +47,7 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
+
 @oauth_logout_page.route('/logout')
 def logout():
     logout_user()
@@ -62,7 +62,7 @@ def disconnect():
             del login_session['gplus_id']
             del login_session['picture']
             del login_session['user_id']
-            #del login_session['credentials']
+            # del login_session['credentials']
         if login_session['provider'] == 'facebook':
             fbdisconnect()
             del login_session['facebook_id']

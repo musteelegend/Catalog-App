@@ -2,7 +2,7 @@ from flask import Flask
 from main_handlers.catalog import catalog_page
 from login_handlers.oauth_login import oauth_login_page
 from logout_handlers.oauth_logout import oauth_logout_page
-from database_setup import Base, User
+from database.database_setup import Base, User
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
 from main_handlers.menu import menu_page

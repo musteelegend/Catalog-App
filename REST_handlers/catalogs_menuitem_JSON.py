@@ -1,14 +1,14 @@
 from flask import session as login_session
 from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Catalog, MenuItem, OauthUser
+from database.database_setup import Base, Catalog, MenuItem, OauthUser
 from login_handlers.oauth_login import showLogin, fbconnect, gconnect
 # IMPORTS FOR THIS STEP
 import json
 from flask import make_response
 import requests
-from flask import Flask, render_template, request, redirect, jsonify, url_for,
-flash, Blueprint
+from flask import Flask, render_template, request, redirect, jsonify, url_for
+from flask import flash, Blueprint
 
 
 engine = create_engine('sqlite:///catalogmenu.db')

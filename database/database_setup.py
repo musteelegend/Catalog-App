@@ -7,14 +7,14 @@ import datetime
 
 Base = declarative_base()
 
+
 class User(Base):
     __tablename__ = 'user'
-    id = Column(Integer , primary_key=True)
-    username = Column(String(20), unique=True , index=True)
+    id = Column(Integer, primary_key=True)
+    username = Column(String(20), unique=True, index=True)
     password = Column(String(10))
     email = Column(String(50), index=True)
     registered_on = Column(DateTime, default=datetime.datetime.utcnow)
-
 
     def is_authenticated(self):
         return True
@@ -30,6 +30,7 @@ class User(Base):
 
     def __repr__(self):
         return '<User %r>' % (self.username)
+
 
 class OauthUser(Base):
     __tablename__ = 'oauth_user'
@@ -50,22 +51,23 @@ class Catalog(Base):
     oauth_user = relationship(OauthUser)
     users_id = Column(Integer, ForeignKey('user.id'))
     users = relationship(User)
-    menu_item = relationship('MenuItem', cascade='all,delete', backref='catalog')
+    menu_item = relationship('MenuItem', cascade='all,delete',
+                             backref='catalog')
 
     @property
     def serialize(self):
-       """Return object data in easily serializeable format"""
-       return {
-           'name'         : self.name,
-           'id'           : self.id,
-       }
+        """Return object data in easily serializeable format"""
+        return {
+            'name': self.name,
+            'id': self.id,
+        }
+
 
 class MenuItem(Base):
     __tablename__ = 'menu_item'
 
-
-    title =Column(String(80), nullable = False)
-    id = Column(Integer, primary_key = True)
+    title = Column(String(80), nullable=False)
+    id = Column(Integer, primary_key=True)
     description = Column(String(250))
     created_date = Column(DateTime, default=datetime.datetime.utcnow)
     catalog_id = Column(Integer, ForeignKey('catalog.id'))
@@ -74,16 +76,14 @@ class MenuItem(Base):
     users_id = Column(Integer, ForeignKey('user.id'))
     users = relationship(User)
 
-
     @property
     def serialize(self):
-       """Return object data in easily serializeable format"""
-       return {
-           'title'         : self.title,
-           'description'         : self.description,
-           'id'         : self.id,
-       }
-
+        """Return object data in easily serializeable format"""
+        return {
+            'title': self.title,
+            'description': self.description,
+            'id': self.id,
+        }
 
 
 engine = create_engine('sqlite:///catalogmenu.db')

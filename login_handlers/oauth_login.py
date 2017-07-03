@@ -1,11 +1,8 @@
-from flask import Flask, render_template, request, redirect, jsonify, url_for, flash, Blueprint
-from flask_login import login_user , logout_user , current_user , login_required
-app = Flask(__name__)
-
+from flask import Flask, render_template, request, redirect, jsonify, url_for
+from flask import flash, Blueprint
+from flask_login import login_user, logout_user, current_user, login_required
 from flask import session as login_session
-
-from database_setup import Base, OauthUser, User
-
+from database.database_setup import Base, OauthUser, User
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
 from oauth2client.client import flow_from_clientsecrets
@@ -14,8 +11,9 @@ import httplib2
 import json
 from flask import make_response
 import requests
-import random, string
-from flask_login import LoginManager
+import random
+import string
+app = Flask(__name__)
 
 
 engine = create_engine('sqlite:///catalogmenu.db')
@@ -26,9 +24,7 @@ session = DBSession()
 
 
 oauth_login_page = Blueprint('oauth_login_page', __name__,
-                        template_folder='templates')
-
-
+                             template_folder='templates')
 
 
 CLIENT_ID = json.loads(
@@ -38,11 +34,13 @@ APPLICATION_NAME = "Restaurant Menu Application"
 
 @oauth_login_page.route('/login')
 def showLogin():
-    state = ''.join(random.choice(string.ascii_uppercase+string.digits) for x in list(range(32)))
+    state = ''.join(random.choice(string.ascii_uppercase+string.digits)
+                    for x in list(range(32)))
     login_session['state'] = state
     return render_template('login.html', STATE=state)
 
-@oauth_login_page.route('/login',methods=['GET','POST'])
+
+@oauth_login_page.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
@@ -51,14 +49,16 @@ def login():
     login_session['username'] = username
     login_session['email'] = password
     login_session['provider'] = "inHouse"
-    registered_user = session.query(User).filter_by(username=username,password=password).first()
+    registered_user = session.query(User).filter_by(username=username,
+                                                    password=password).first()
     # User.query.filter_by(username=username,password=password).first()
     if registered_user is None:
-        flash('Username or Password is invalid' , 'error')
+        flash('Username or Password is invalid', 'error')
         return redirect(url_for('login'))
     login_user(registered_user)
     flash('Logged in successfully')
-    return redirect(request.args.get('next') or url_for('catalog_page.showCatalogs'))
+    return redirect(request.args.get('next') or
+                    url_for('catalog_page.showCatalogs'))
 
 
 @oauth_login_page.route('/fbconnect', methods=['POST'])
@@ -69,18 +69,16 @@ def fbconnect():
         return response
     access_token = request.data.decode('utf-8')
 
-
     app_id = json.loads(open('fb_client_secrets.json', 'r').read())[
         'web']['app_id']
     app_secret = json.loads(
         open('fb_client_secrets.json', 'r').read())['web']['app_secret']
-    url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % (
+    url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % (  # noqa
         app_id, app_secret, access_token)
 
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
     data = json.loads(result.decode('utf-8'))
-    #data = bytes(data1, 'utf-8')
 
     # Extract the access token from response
     token = 'access_token=' + data['access_token']
@@ -102,7 +100,7 @@ def fbconnect():
     login_session['access_token'] = token
 
     # Get user picture
-    url = 'https://graph.facebook.com/v2.8/me/picture?%s&redirect=0&height=200&width=200' % token
+    url = 'https://graph.facebook.com/v2.8/me/picture?%s&redirect=0&height=200&width=200' % token  # noqa
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
     data = json.loads(result.decode('utf-8'))
@@ -122,10 +120,11 @@ def fbconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '  # noqa
 
     flash("Now logged in as %s" % login_session['username'])
     return output
+
 
 @oauth_login_page.route('/gconnect', methods=['POST'])
 def gconnect():
@@ -183,8 +182,8 @@ def gconnect():
     stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
+        response = make_response(json.dumps(
+                                 'Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -216,21 +215,21 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '  # noqa
     flash("you are now logged in as %s" % login_session['username'])
     return output
 
 
-@oauth_login_page.route('/register' , methods=['GET','POST'])
+@oauth_login_page.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
         return render_template('register.html')
-    user = User(username=request.form['username'] , password=request.form['password'], email=request.form['email'])
+    user = User(username=request.form['username'],
+                password=request.form['password'], email=request.form['email'])
     session.add(user)
     session.commit()
     flash('User successfully registered')
     return redirect(url_for('oauth_login_page.login'))
-
 
 
 def getUserID(email):
@@ -247,7 +246,9 @@ def getUserInfo(user_id):
 
 
 def createUser(login_session):
-    newUser = User(name=login_session['username'], email=login_session['email'], picture=login_session['picture'])
+    newUser = User(name=login_session['username'],
+                   email=login_session['email'],
+                   picture=login_session['picture'])
     session.add(newUser)
     session.commit()
     user = session.query(User).filter_by(email=login_session['email']).one()
