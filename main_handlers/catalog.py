@@ -44,7 +44,7 @@ def newCatalog():
         return redirect('/login')
     if request.method == 'POST':
         newCatalog = Catalog(name=request.form['name'],
-                             user_id=login_session['user_id'])
+                             oauth_user_id=login_session['user_id'])
         session.add(newCatalog)
         flash('New Catalog %s Successfully Created' % newCatalog.name)
         session.commit()

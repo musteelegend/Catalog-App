@@ -54,7 +54,7 @@ def login():
     # User.query.filter_by(username=username,password=password).first()
     if registered_user is None:
         flash('Username or Password is invalid', 'error')
-        return redirect(url_for('login'))
+        return redirect(url_for('oauth_login_page.login'))
     login_user(registered_user)
     flash('Logged in successfully')
     return redirect(request.args.get('next') or
@@ -234,22 +234,22 @@ def register():
 
 def getUserID(email):
     try:
-        user = session.query(User).filter_by(email=email).one()
+        user = session.query(OauthUser).filter_by(email=email).one()
         return user.id
     except:
         return None
 
 
 def getUserInfo(user_id):
-    user = session.query(User).filter_by(id=user_id).one()
+    user = session.query(OauthUser).filter_by(id=user_id).one()
     return user
 
 
 def createUser(login_session):
-    newUser = User(name=login_session['username'],
+    newUser = OauthUser(name=login_session['username'],
                    email=login_session['email'],
                    picture=login_session['picture'])
     session.add(newUser)
     session.commit()
-    user = session.query(User).filter_by(email=login_session['email']).one()
+    user = session.query(OauthUser).filter_by(email=login_session['email']).one()
     return user.id
